@@ -1,0 +1,1 @@
+SELECT name, done FROM gemini.batches.batches;

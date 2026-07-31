@@ -1,0 +1,100 @@
+id: gemini
+name: gemini
+version: v00.00.00000
+providerServices:
+  auth_tokens:
+    id: auth_tokens:v00.00.00000
+    name: auth_tokens
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/auth_tokens.yaml
+    title: auth_tokens API
+    version: v00.00.00000
+    description: gemini auth_tokens API
+  batches:
+    id: batches:v00.00.00000
+    name: batches
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/batches.yaml
+    title: batches API
+    version: v00.00.00000
+    description: gemini batches API
+  cached_contents:
+    id: cached_contents:v00.00.00000
+    name: cached_contents
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/cached_contents.yaml
+    title: cached_contents API
+    version: v00.00.00000
+    description: gemini cached_contents API
+  corpora:
+    id: corpora:v00.00.00000
+    name: corpora
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/corpora.yaml
+    title: corpora API
+    version: v00.00.00000
+    description: gemini corpora API
+  dynamic:
+    id: dynamic:v00.00.00000
+    name: dynamic
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/dynamic.yaml
+    title: dynamic API
+    version: v00.00.00000
+    description: gemini dynamic API
+  file_search_stores:
+    id: file_search_stores:v00.00.00000
+    name: file_search_stores
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/file_search_stores.yaml
+    title: file_search_stores API
+    version: v00.00.00000
+    description: gemini file_search_stores API
+  files:
+    id: files:v00.00.00000
+    name: files
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/files.yaml
+    title: files API
+    version: v00.00.00000
+    description: gemini files API
+  generated_files:
+    id: generated_files:v00.00.00000
+    name: generated_files
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/generated_files.yaml
+    title: generated_files API
+    version: v00.00.00000
+    description: gemini generated_files API
+  models:
+    id: models:v00.00.00000
+    name: models
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/models.yaml
+    title: models API
+    version: v00.00.00000
+    description: gemini models API
+  tuned_models:
+    id: tuned_models:v00.00.00000
+    name: tuned_models
+    preferred: true
+    service:
+      $ref: gemini/v00.00.00000/services/tuned_models.yaml
+    title: tuned_models API
+    version: v00.00.00000
+    description: gemini tuned_models API
+config:
+  auth:
+    type: custom
+    location: header
+    name: x-goog-api-key
+    credentialsenvvar: GEMINI_API_KEY

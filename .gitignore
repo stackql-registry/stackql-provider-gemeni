@@ -1,0 +1,11 @@
+node_modules/
+stackql
+stackql-server.log
+mock.log
+.env
+provider-dev/source/split/
+provider-dev/source/gemini-prepassed.yaml
+website/node_modules/
+website/build/
+website/.docusaurus/
+.shared-config/

@@ -1,0 +1,27 @@
+---
+title: gemini
+hide_title: false
+hide_table_of_contents: false
+keywords:
+  - gemini
+  - google
+  - generative language
+  - stackql
+  - infrastructure-as-code
+  - configuration-as-data
+  - cloud inventory
+description: Query and interact with the Google Gemini API using SQL
+custom_edit_url: null
+image: /img/stackql-cover.png
+id: 'provider-intro'
+---
+
+import CopyableCode from '@site/src/components/CopyableCode/CopyableCode';
+
+Run Gemini inference, count tokens, generate embeddings, and manage models, tuned models, files, cached contents, corpora, file search stores and batches on the Google Gemini API (`generativelanguage.googleapis.com`) using SQL.
+
+:::info
+
+This provider covers the Gemini API surface reachable with a <CopyableCode code="GEMINI_API_KEY" />. Billing, quota, API key management and IAM are GCP control-plane services (`cloudbilling`, `serviceusage`, `apikeys`, `iam`) that authenticate with OAuth/ADC - they live in the [__`google`__](https://google.stackql.io/) provider. StackQL does cross-provider joins, so the two compose: see [Joining to the GCP control plane](/google-control-plane).
+
+:::

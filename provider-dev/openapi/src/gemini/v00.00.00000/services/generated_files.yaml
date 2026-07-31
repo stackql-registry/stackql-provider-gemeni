@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: generated_files API
+  description: gemini generated_files API
+  version: v1beta
+paths:
+  /v1beta/generatedFiles:
+    get:
+      operationId: generatedFiles.list
+      description: Lists the generated files owned by the requesting project.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListGeneratedFilesResponse"
+      parameters:
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            format: int32
+          description: Optional. Maximum number of `GeneratedFile`s to return per page. If unspecified, defaults to 10. Maximum `page_size` is 50.
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+          description: Optional. A page token from a previous `ListGeneratedFiles` call.
+  /v1beta/generatedFiles/{generatedFilesId}/operations/{operationsId}:
+    get:
+      operationId: generatedFiles.operations.get
+      description: Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Operation"
+      parameters:
+        - in: path
+          name: generatedFilesId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+components:
+  schemas:
+    ListGeneratedFilesResponse:
+      id: ListGeneratedFilesResponse
+      description: Response for `ListGeneratedFiles`.
+      type: object
+      properties:
+        generatedFiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/GeneratedFile"
+          description: The list of `GeneratedFile`s.
+        nextPageToken:
+          type: string
+          description: A token that can be sent as a `page_token` into a subsequent `ListGeneratedFiles` call.
+    Operation:
+      id: Operation
+      description: This resource represents a long-running operation that is the result of a network API call.
+      type: object
+      properties:
+        response:
+          description: The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+          type: object
+        done:
+          type: boolean
+          description: If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.
+        name:
+          type: string
+          description: The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.
+        error:
+          description: The error result of the operation in case of failure or cancellation.
+          $ref: "#/components/schemas/Status"
+        metadata:
+          type: object
+          description: Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.
+    GeneratedFile:
+      id: GeneratedFile
+      description: A file generated on behalf of a user.
+      type: object
+      properties:
+        name:
+          description: "Identifier. The name of the generated file. Example: `generatedFiles/abc-123`"
+          type: string
+        state:
+          type: string
+          enum:
+            - STATE_UNSPECIFIED
+            - GENERATING
+            - GENERATED
+            - FAILED
+          readOnly: true
+          enumDescriptions:
+            - The default value. This value is used if the state is omitted.
+            - Being generated.
+            - Generated and is ready for download.
+            - Failed to generate the GeneratedFile.
+          description: Output only. The state of the GeneratedFile.
+        error:
+          description: Error details if the GeneratedFile ends up in the STATE_FAILED state.
+          $ref: "#/components/schemas/Status"
+        mimeType:
+          type: string
+          description: MIME type of the generatedFile.
+    Status:
+      id: Status
+      description: "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors)."
+      type: object
+      properties:
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.
+        code:
+          type: integer
+          format: int32
+          description: The status code, which should be an enum value of google.rpc.Code.
+        details:
+          description: A list of messages that carry the error details. There is a common set of message types for APIs to use.
+          type: array
+          items:
+            type: object
+  x-stackQL-resources:
+    generated_files:
+      id: gemini.generated_files.generated_files
+      name: generated_files
+      title: Generated Files
+      methods:
+        list:
+          operation:
+            $ref: "#/paths/~1v1beta~1generatedFiles/get"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+            objectKey: $.generatedFiles
+          config:
+            pagination:
+              requestToken:
+                key: pageToken
+                location: query
+              responseToken:
+                key: $.nextPageToken
+                location: body
+            queryParamPushdown:
+              top:
+                paramName: pageSize
+      sqlVerbs:
+        select:
+          - $ref: "#/components/x-stackQL-resources/generated_files/methods/list"
+        insert: []
+        update: []
+        delete: []
+        replace: []
+    operations:
+      id: gemini.generated_files.operations
+      name: operations
+      title: Operations
+      methods:
+        get:
+          operation:
+            $ref: "#/paths/~1v1beta~1generatedFiles~1{generatedFilesId}~1operations~1{operationsId}/get"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+      sqlVerbs:
+        select:
+          - $ref: "#/components/x-stackQL-resources/operations/methods/get"
+        insert: []
+        update: []
+        delete: []
+        replace: []
+servers:
+  - url: https://generativelanguage.googleapis.com

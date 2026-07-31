@@ -1,0 +1,35 @@
+{
+  "name": "stackql-provider-gemini",
+  "version": "0.1.0",
+  "description": "StackQL provider for the Google Gemini API (generativelanguage.googleapis.com), mastered from one factory pipeline",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "locate": "node factory/locate.mjs",
+    "download": "node factory/download.mjs",
+    "convert": "node factory/convert.mjs",
+    "prepass": "node factory/pre-pass.mjs",
+    "split": "node node_modules/@stackql/provider-utils/bin/provider-dev-utils.mjs split --api-doc provider-dev/source/gemini-prepassed.yaml --provider-name gemini --output-dir provider-dev/source/split --svc-discriminator function --svc-discriminator-fn factory/service-map.mjs --overwrite",
+    "normalize": "node node_modules/@stackql/provider-utils/bin/provider-dev-utils.mjs normalize --api-dir provider-dev/source/split && node factory/scrub-unions.mjs --api-dir provider-dev/source/split",
+    "analyze": "node node_modules/@stackql/provider-utils/bin/provider-dev-utils.mjs analyze --input-dir provider-dev/source/split --output-dir provider-dev/config",
+    "generate": "node node_modules/@stackql/provider-utils/bin/provider-dev-utils.mjs generate --input-dir provider-dev/source/split --output-dir provider-dev/openapi/src/gemini --config-path provider-dev/config/all_services.csv --provider-id gemini --servers '[{\"url\":\"https://generativelanguage.googleapis.com\"}]' --provider-config '{\"auth\":{\"type\":\"custom\",\"location\":\"header\",\"name\":\"x-goog-api-key\",\"credentialsenvvar\":\"GEMINI_API_KEY\"}}' --views-dir provider-dev/views --naive-req-body-translate --overwrite && node factory/post-pass.mjs --provider-root provider-dev/openapi/src/gemini/v00.00.00000",
+    "guards": "node factory/guards.mjs --provider gemini --provider-root provider-dev/openapi/src/gemini/v00.00.00000 --spec provider-dev/source/gemini-converted.yaml --exclusions factory/exclusions.yaml",
+    "build": "npm run convert && npm run prepass && npm run split && npm run normalize && npm run analyze && npm run generate && npm run guards",
+    "test-meta-routes": "node bin/test-meta-routes.cjs gemini",
+    "smoke": "node tests/smoke.cjs",
+    "smoke-live": "node tests/smoke.cjs --live",
+    "docgen": "node -e \"fs.rmSync('website/docs/services',{recursive:true,force:true})\" && node node_modules/@stackql/provider-utils/bin/docgen-utils.mjs generate-docs-v2 --provider-name gemini --provider-dir provider-dev/openapi/src/gemini/v00.00.00000 --output-dir website --provider-data-dir provider-dev/docgen/provider-data/gemini && node factory/enrich-select-docs.mjs --provider gemini --provider-root provider-dev/openapi/src/gemini/v00.00.00000 --docs-dir website/docs --examples factory/docgen-select-examples.yaml && node factory/scrub-docs.mjs --docs-dir website/docs --provider-root provider-dev/openapi/src/gemini/v00.00.00000 && node -e \"fs.cpSync('provider-dev/docgen/provider-data/gemini/static-docs','website/docs',{recursive:true})\"",
+    "check-doc-examples": "node factory/check-doc-examples.mjs",
+    "postinstall": "node factory/patch-provider-utils.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@stackql/pgwire-lite": "^1.0.1",
+    "@stackql/provider-utils": "^0.7.7",
+    "js-yaml": "^4.1.0",
+    "yaml": "^2.9.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,5 @@
+SELECT
+  name,
+  done,
+  JSON_EXTRACT(metadata, '$.state') AS state
+FROM gemini.batches.batches;

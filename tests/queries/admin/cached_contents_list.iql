@@ -1,0 +1,1 @@
+SELECT name, model FROM gemini.cached_contents.cached_contents;

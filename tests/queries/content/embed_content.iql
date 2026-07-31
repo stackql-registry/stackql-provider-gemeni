@@ -1,0 +1,4 @@
+SELECT JSON_EXTRACT(embedding, '$.values[0]') AS v0
+FROM gemini.models.embeddings
+WHERE modelsId = 'mock-model-1'
+AND content = '{"parts":[{"text":"hello"}]}';

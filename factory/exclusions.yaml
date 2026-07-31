@@ -1,0 +1,28 @@
+# Documented exclusion list for the `gemini` provider.
+#
+# CI guard 1 (spec-coverage diff) asserts:
+#   converted discovery ops  -  provider ops  ==  EXACTLY this list.
+#
+# Keys are "<METHOD> <path>" using the converted spec's literal path keys.
+# Each entry says why it is out. Bidi/live (BidiGenerateContent) methods and
+# the /v1beta/openai/* compat shim do not appear in the discovery document,
+# so they need no entries here (verified against revision 20260729).
+
+sse_streams:
+  # SSE streaming variants are not SQL result sets; unary generateContent is
+  # the SELECT surface (same policy as the Anthropic provider's SSE ops).
+  - op: POST /v1beta/models/{modelsId}:streamGenerateContent
+    reason: SSE streaming variant of models.generateContent
+  - op: POST /v1beta/tunedModels/{tunedModelsId}:streamGenerateContent
+    reason: SSE streaming variant of tunedModels.generateContent
+  - op: POST /v1beta/dynamic/{dynamicId}:streamGenerateContent
+    reason: SSE streaming variant of dynamic.generateContent
+
+media_uploads:
+  # Resumable/multipart upload dispatch is rejected by the stackql engine
+  # ("media type not supported", verified policy from the Anthropic build).
+  # File ingestion is a client-side upload protocol, not a SQL operation.
+  - op: POST /v1beta/files
+    reason: media.upload resumable/multipart upload initiation
+  - op: POST /v1beta/fileSearchStores/{fileSearchStoresId}:uploadToFileSearchStore
+    reason: media.uploadToFileSearchStore resumable/multipart upload

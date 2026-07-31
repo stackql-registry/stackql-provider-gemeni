@@ -1,0 +1,3 @@
+SELECT name, display_name, input_token_limit, thinking, supports_generate_content
+FROM gemini.models.vw_model_capabilities
+ORDER BY name;

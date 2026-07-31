@@ -1,0 +1,17 @@
+# Netlify site: gemini-provider.stackql.io
+# Base directory (set in Netlify UI): website
+
+[build]
+  command = "yarn build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Selective builds: skip when neither the provider tree nor this site
+# changed since the last deploy.
+[build.processing]
+  skip_processing = false
+
+[context.production]
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ../provider-dev ../factory ."

@@ -1,0 +1,193 @@
+# Smoke-test manifest for the stackql `gemini` provider.
+#
+# Mock mode (default): tests/mock/mock-server.cjs enforces the wire
+# contract (401 without x-goog-api-key, 400 if a `key` query param ever
+# appears, 400 when naive body translate did not fan JSON-typed SQL values
+# out to real arrays) - every green test below therefore proves
+# header/auth/body behaviour, not just row plumbing.
+# The models list is served in 2 pageToken pages (3+2, nextPageToken absent
+# on the final page) so `models_list_paginated` proves auto-pagination
+# walks the cursor to the end and terminates.
+#
+# Live mode (--live, gated on GEMINI_API_KEY): READ-ONLY plus free
+# countTokens inference; only tests tagged `live: true` run. No paid
+# generateContent in CI without explicit opt-in.
+
+config:
+  registry_path: ../provider-dev/openapi
+  queries_dir: queries
+  live_env_var: GEMINI_API_KEY
+  mock_key: mock-gemini-key
+  mock_port: 8990
+  query_timeout_seconds: 120
+
+vars:
+  model: gemini-2.5-flash
+
+tests:
+  # ---- credential handling ---------------------------------------------------
+  - name: auth_env_required
+    description: empty credentials env var must fail client-side, never hit the wire
+    file: auth/missing_key.iql
+    env:
+      GEMINI_API_KEY: ""
+    expect_error: "credentials error"
+
+  # ---- pageToken pagination (rule 2 wire proof) ------------------------------
+  - name: models_list_paginated
+    description: 5 mock models over 2 pageToken pages (3+2) - proves the walk terminates
+    file: models/models_list.iql
+    expect:
+      equals_rows: 5
+      contains: ["mock-model-1", "mock-model-5"]
+
+  - name: models_get
+    description: single model by path param
+    file: models/models_get.iql
+    expect:
+      equals_rows: 1
+      contains: ["mock-model-1"]
+
+  # ---- inference as result sets ----------------------------------------------
+  - name: generate_content
+    description: POST-as-SELECT; naive body translate fans contents out to a real JSON array
+    file: content/generate_content.iql
+    expect:
+      min_rows: 1
+      contains: ["mock completion"]
+
+  - name: count_tokens
+    description: divergent-shape resource split - {totalTokens} row
+    file: content/count_tokens.iql
+    expect:
+      min_rows: 1
+      contains: ["42"]
+
+  - name: embed_content
+    description: embedding vector as a JSON column
+    file: content/embed_content.iql
+    expect:
+      min_rows: 1
+      contains: ["0.1"]
+
+  # ---- management surface (the collapsed control plane) ----------------------
+  - name: files_list
+    description: files metadata list
+    file: admin/files_list.iql
+    expect:
+      equals_rows: 2
+      contains: ["mock-file-1", "image/png"]
+
+  - name: cached_contents_list
+    description: cached contents list
+    file: admin/cached_contents_list.iql
+    expect:
+      equals_rows: 1
+      contains: ["mock-cache-1"]
+
+  - name: cached_contents_delete
+    description: DELETE routing by path param
+    file: admin/cached_contents_delete.iql
+
+  - name: corpora_insert
+    description: INSERT with RETURNING; body arrives as JSON with displayName
+    file: admin/corpora_insert.iql
+    expect:
+      min_rows: 1
+      contains: ["stackql smoke corpus"]
+
+  - name: batches_list
+    description: Operation-shaped batches list via $.operations objectKey
+    file: admin/batches_list.iql
+    expect:
+      equals_rows: 2
+      contains: ["mock-batch-1", "mock-batch-2"]
+
+  - name: batches_cancel
+    description: lifecycle op on the EXEC surface (schema_override envelope)
+    file: admin/batches_cancel.iql
+    always_run: true
+
+  - name: tuned_models_list
+    description: tuned models list
+    file: admin/tuned_models_list.iql
+    expect:
+      equals_rows: 1
+      contains: ["mock-tuned-1"]
+
+  # ---- documented examples ----------------------------------------------------
+  # These files are the VERBATIM SQL published in the provider docs index
+  # (provider-dev/docgen/provider-data/gemini/headerContent2.txt). They run
+  # here so the front page cannot drift from what the provider actually does.
+  - name: docs_inference
+    description: docs example - ask Gemini, read the reply out of the candidates array
+    file: examples/inference.iql
+    expect:
+      min_rows: 1
+      contains: ["mock completion"]
+
+  - name: docs_token_budget
+    description: docs example - count tokens before spending them
+    file: examples/token_budget.iql
+    expect:
+      equals_rows: 1
+      contains: ["42"]
+
+  - name: docs_model_capabilities
+    description: docs example - the vw_model_capabilities view over the paginated list
+    file: examples/model_capabilities.iql
+    expect:
+      equals_rows: 5
+      contains: ["mock-model-1"]
+
+  - name: docs_batch_triage
+    description: docs example - batch state from the metadata JSON column
+    file: examples/batch_triage.iql
+    expect:
+      equals_rows: 2
+      contains: ["mock-batch-2"]
+
+  # ---- live subset (READ-ONLY + free countTokens) -----------------------------
+  - name: live_models_list
+    description: real models list (paginated walk against the live API)
+    file: models/models_list.iql
+    live: true
+    skip_mock: true
+    expect:
+      min_rows: 10
+      contains: ["gemini"]
+
+  - name: live_models_get
+    description: real model by id
+    file: models/models_get_live.iql
+    live: true
+    skip_mock: true
+    expect:
+      equals_rows: 1
+      contains: ["{{ model }}"]
+
+  - name: live_token_count
+    description: token counting is free of charge
+    file: content/count_tokens_live.iql
+    live: true
+    skip_mock: true
+    expect:
+      min_rows: 1
+
+  - name: live_files_list
+    description: files list (empty result is a pass - proves 200 + parse)
+    file: admin/files_list.iql
+    live: true
+    skip_mock: true
+
+  - name: live_cached_contents_list
+    description: cached contents list (empty result is a pass)
+    file: admin/cached_contents_list.iql
+    live: true
+    skip_mock: true
+
+  - name: live_batches_list
+    description: batches list (empty result is a pass)
+    file: admin/batches_list.iql
+    live: true
+    skip_mock: true

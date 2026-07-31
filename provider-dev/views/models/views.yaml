@@ -1,0 +1,97 @@
+# Convenience views for the models service, spliced into
+# x-stackQL-resources by `generate --views-dir` (existing API-derived
+# resources win on key collision). `config.docs.fields` drives the docgen
+# view page; `config.views.select` carries the dialect-predicated DDL
+# (sqlite3 primary, postgres fallback).
+vw_model_capabilities:
+  name: vw_model_capabilities
+  id: gemini.models.vw_model_capabilities
+  config:
+    docs:
+      fields:
+      - name: name
+        type: string
+        description: Model resource name, e.g. `models/gemini-2.5-flash`.
+      - name: display_name
+        type: string
+        description: Human-readable name of the model.
+      - name: version
+        type: string
+        description: Model version string.
+      - name: input_token_limit
+        type: integer
+        description: Maximum number of input tokens allowed.
+      - name: output_token_limit
+        type: integer
+        description: Maximum number of output tokens available.
+      - name: supports_generate_content
+        type: boolean
+        description: Whether the model supports `generateContent`.
+      - name: supports_count_tokens
+        type: boolean
+        description: Whether the model supports `countTokens`.
+      - name: supports_embed_content
+        type: boolean
+        description: Whether the model supports `embedContent`.
+      - name: supports_batching
+        type: boolean
+        description: Whether the model supports `batchGenerateContent`.
+      - name: supports_caching
+        type: boolean
+        description: Whether the model supports `createCachedContent`.
+      - name: thinking
+        type: boolean
+        description: Whether the model supports extended thinking.
+      - name: temperature
+        type: number
+        description: Default sampling temperature.
+      - name: max_temperature
+        type: number
+        description: Maximum sampling temperature the model accepts.
+      - name: top_p
+        type: number
+        description: Default nucleus sampling probability mass.
+      - name: top_k
+        type: integer
+        description: Default top-k sampling cutoff.
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+            name,
+            displayName AS display_name,
+            version,
+            inputTokenLimit AS input_token_limit,
+            outputTokenLimit AS output_token_limit,
+            CASE WHEN supportedGenerationMethods LIKE '%generateContent%' THEN 1 ELSE 0 END AS supports_generate_content,
+            CASE WHEN supportedGenerationMethods LIKE '%countTokens%' THEN 1 ELSE 0 END AS supports_count_tokens,
+            CASE WHEN supportedGenerationMethods LIKE '%embedContent%' THEN 1 ELSE 0 END AS supports_embed_content,
+            CASE WHEN supportedGenerationMethods LIKE '%batchGenerateContent%' THEN 1 ELSE 0 END AS supports_batching,
+            CASE WHEN supportedGenerationMethods LIKE '%createCachedContent%' THEN 1 ELSE 0 END AS supports_caching,
+            thinking,
+            temperature,
+            maxTemperature AS max_temperature,
+            topP AS top_p,
+            topK AS top_k
+          FROM gemini.models.models
+        fallback:
+          predicate: sqlDialect == "postgres"
+          ddl: |-
+            SELECT
+              name,
+              displayName AS display_name,
+              version,
+              inputTokenLimit AS input_token_limit,
+              outputTokenLimit AS output_token_limit,
+              CASE WHEN supportedGenerationMethods LIKE '%generateContent%' THEN 1 ELSE 0 END AS supports_generate_content,
+              CASE WHEN supportedGenerationMethods LIKE '%countTokens%' THEN 1 ELSE 0 END AS supports_count_tokens,
+              CASE WHEN supportedGenerationMethods LIKE '%embedContent%' THEN 1 ELSE 0 END AS supports_embed_content,
+              CASE WHEN supportedGenerationMethods LIKE '%batchGenerateContent%' THEN 1 ELSE 0 END AS supports_batching,
+              CASE WHEN supportedGenerationMethods LIKE '%createCachedContent%' THEN 1 ELSE 0 END AS supports_caching,
+              thinking,
+              temperature,
+              maxTemperature AS max_temperature,
+              topP AS top_p,
+              topK AS top_k
+            FROM gemini.models.models

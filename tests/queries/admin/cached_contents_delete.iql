@@ -1,0 +1,2 @@
+DELETE FROM gemini.cached_contents.cached_contents
+WHERE cachedContentsId = 'mock-cache-1';

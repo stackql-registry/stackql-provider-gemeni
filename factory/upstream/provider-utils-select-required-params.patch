@@ -1,0 +1,32 @@
+Subject: [PATCH] docgen: include body-required fields for SELECT-routed body-bearing methods
+
+The "Required Params" method-table column and the SELECT examples are
+built from `parameters` plus requestBody.required, but the request-body
+side is gated to insert/update/replace/exec access types. SELECT-mapped
+body-bearing methods (e.g. inference operations that POST but return a
+result set) therefore render an empty Required Params cell and an
+unroutable example, even though runtime routing (and SHOW EXTENDED
+METHODS) requires the body fields.
+
+--- a/src/docgen/resource/methods.js
++++ b/src/docgen/resource/methods.js
+@@
+-    if (!['insert', 'update', 'replace', 'exec'].includes(accessType)) {
++    if (!['insert', 'update', 'replace', 'exec', 'select'].includes(accessType)) {
+         return [];
+     }
+@@
+-    if (['insert', 'update', 'replace'].includes(accessType) && !hasNaiveTranslate) {
++    if (['insert', 'update', 'replace', 'select'].includes(accessType) && !hasNaiveTranslate) {
+         return requiredBodyProps.map(prop => `data__${prop}`);
+--- a/src/docgen/resource/examples/select-example.js
++++ b/src/docgen/resource/examples/select-example.js
+@@
+         // Add WHERE clause with parameters
+-        const requiredParams = Object.keys(methodDetails.requiredParams || {});
++        // body-required fields participate in routing for SELECT-mapped
++        // body-bearing methods (naive translate exposes them under their
++        // native names)
++        const bodyRequired = (methodDetails.requestBody && methodDetails.requestBody.required) || [];
++        const requiredParams = [...new Set([...Object.keys(methodDetails.requiredParams || {}), ...bodyRequired])];
+         const optionalParams = Object.keys(methodDetails.optionalParams || {});

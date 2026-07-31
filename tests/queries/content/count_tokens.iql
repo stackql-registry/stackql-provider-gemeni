@@ -1,0 +1,3 @@
+SELECT totalTokens FROM gemini.models.token_counts
+WHERE modelsId = 'mock-model-1'
+AND contents = '[{"parts":[{"text":"hello"}]}]';

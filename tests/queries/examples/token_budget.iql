@@ -1,0 +1,4 @@
+SELECT totalTokens
+FROM gemini.models.token_counts
+WHERE modelsId = 'gemini-2.5-flash'
+AND contents = '[{"parts":[{"text":"Name the four Galilean moons of Jupiter, comma separated."}]}]';

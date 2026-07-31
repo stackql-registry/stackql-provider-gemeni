@@ -1,0 +1,1 @@
+EXEC gemini.batches.batches.cancel @batchesId = 'mock-batch-2';

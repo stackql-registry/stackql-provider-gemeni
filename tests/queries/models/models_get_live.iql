@@ -1,0 +1,2 @@
+SELECT name, displayName, inputTokenLimit FROM gemini.models.models
+WHERE modelsId = '{{ model }}';

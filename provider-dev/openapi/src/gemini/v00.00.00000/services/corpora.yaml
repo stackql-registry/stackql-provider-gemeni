@@ -1,0 +1,503 @@
+openapi: 3.0.3
+info:
+  title: corpora API
+  description: gemini corpora API
+  version: v1beta
+paths:
+  /v1beta/corpora/{corporaId}:
+    delete:
+      operationId: corpora.delete
+      description: Deletes a `Corpus`.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: force
+          schema:
+            type: boolean
+          description: Optional. If set to true, any `Document`s and objects related to this `Corpus` will also be deleted. If false (the default), a `FAILED_PRECONDITION` error will be returned if `Corpus` contains any `Document`s.
+    get:
+      operationId: corpora.get
+      description: Gets information about a specific `Corpus`.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Corpus"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+  /v1beta/corpora:
+    post:
+      operationId: corpora.create
+      description: Creates an empty `Corpus`.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Corpus"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Corpus"
+    get:
+      operationId: corpora.list
+      description: Lists all `Corpora` owned by the user.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListCorporaResponse"
+      parameters:
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            format: int32
+          description: Optional. The maximum number of `Corpora` to return (per page). The service may return fewer `Corpora`. If unspecified, at most 10 `Corpora` will be returned. The maximum size limit is 20 `Corpora` per page.
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+          description: Optional. A page token, received from a previous `ListCorpora` call. Provide the `next_page_token` returned in the response as an argument to the next request to retrieve the next page. When paginating, all other parameters provided to `ListCorpora` must match the call that provided the page token.
+  /v1beta/corpora/{corporaId}/operations/{operationsId}:
+    get:
+      operationId: corpora.operations.get
+      description: Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Operation"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationsId
+          required: true
+          schema:
+            type: string
+  /v1beta/corpora/{corporaId}/permissions:
+    post:
+      operationId: corpora.permissions.create
+      description: Create a permission to a specific resource.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Permission"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Permission"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+    get:
+      operationId: corpora.permissions.list
+      description: Lists permissions for the specific resource.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPermissionsResponse"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: pageToken
+          schema:
+            type: string
+          description: Optional. A page token, received from a previous `ListPermissions` call. Provide the `page_token` returned by one request as an argument to the next request to retrieve the next page. When paginating, all other parameters provided to `ListPermissions` must match the call that provided the page token.
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            format: int32
+          description: Optional. The maximum number of `Permission`s to return (per page). The service may return fewer permissions. If unspecified, at most 10 permissions will be returned. This method returns at most 1000 permissions per page, even if you pass larger page_size.
+  /v1beta/corpora/{corporaId}/permissions/{permissionsId}:
+    delete:
+      operationId: corpora.permissions.delete
+      description: Deletes the permission.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: permissionsId
+          required: true
+          schema:
+            type: string
+    get:
+      operationId: corpora.permissions.get
+      description: Gets information about a specific Permission.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Permission"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: permissionsId
+          required: true
+          schema:
+            type: string
+    patch:
+      operationId: corpora.permissions.patch
+      description: Updates the permission.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Permission"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Permission"
+      parameters:
+        - in: path
+          name: corporaId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: permissionsId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: updateMask
+          schema:
+            type: string
+            format: google-fieldmask
+          description: "Required. The list of fields to update. Accepted ones: - role (`Permission.role` field)"
+components:
+  schemas:
+    Empty:
+      id: Empty
+      description: "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }"
+      type: object
+      properties: {}
+    Corpus:
+      id: Corpus
+      description: A `Corpus` is a collection of `Document`s. A project can create up to 10 corpora.
+      type: object
+      properties:
+        createTime:
+          readOnly: true
+          format: google-datetime
+          type: string
+          description: Output only. The Timestamp of when the `Corpus` was created.
+        name:
+          description: 'Output only. Immutable. Identifier. The `Corpus` resource name. The ID (name excluding the "corpora/" prefix) can contain up to 40 characters that are lowercase alphanumeric or dashes (-). The ID cannot start or end with a dash. If the name is empty on create, a unique name will be derived from `display_name` along with a 12 character random suffix. Example: `corpora/my-awesome-corpora-123a456b789c`'
+          readOnly: true
+          type: string
+        displayName:
+          type: string
+          description: 'Optional. The human-readable display name for the `Corpus`. The display name must be no more than 512 characters in length, including spaces. Example: "Docs on Semantic Retriever"'
+        updateTime:
+          description: Output only. The Timestamp of when the `Corpus` was last updated.
+          readOnly: true
+          format: google-datetime
+          type: string
+    ListCorporaResponse:
+      id: ListCorporaResponse
+      description: Response from `ListCorpora` containing a paginated list of `Corpora`. The results are sorted by ascending `corpus.create_time`.
+      type: object
+      properties:
+        corpora:
+          description: The returned corpora.
+          items:
+            $ref: "#/components/schemas/Corpus"
+          type: array
+        nextPageToken:
+          description: A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no more pages.
+          type: string
+    Operation:
+      id: Operation
+      description: This resource represents a long-running operation that is the result of a network API call.
+      type: object
+      properties:
+        response:
+          description: The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+          type: object
+        done:
+          type: boolean
+          description: If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.
+        name:
+          type: string
+          description: The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.
+        error:
+          description: The error result of the operation in case of failure or cancellation.
+          $ref: "#/components/schemas/Status"
+        metadata:
+          type: object
+          description: Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.
+    Permission:
+      type: object
+      properties:
+        emailAddress:
+          type: string
+          description: Optional. Immutable. The email address of the user of group which this permission refers. Field is not set when permission's grantee type is EVERYONE.
+        name:
+          readOnly: true
+          type: string
+          description: "Output only. Identifier. The permission name. A unique name will be generated on create. Examples: tunedModels/{tuned_model}/permissions/{permission} corpora/{corpus}/permissions/{permission} Output only."
+        granteeType:
+          description: Optional. Immutable. The type of the grantee.
+          enumDescriptions:
+            - The default value. This value is unused.
+            - Represents a user. When set, you must provide email_address for the user.
+            - Represents a group. When set, you must provide email_address for the group.
+            - Represents access to everyone. No extra information is required.
+          type: string
+          enum:
+            - GRANTEE_TYPE_UNSPECIFIED
+            - USER
+            - GROUP
+            - EVERYONE
+        role:
+          description: Required. The role granted by this permission.
+          type: string
+          enum:
+            - ROLE_UNSPECIFIED
+            - OWNER
+            - WRITER
+            - READER
+          enumDescriptions:
+            - The default value. This value is unused.
+            - Owner can use, update, share and delete the resource.
+            - Writer can use, update and share the resource.
+            - Reader can use the resource.
+      id: Permission
+      description: "Permission resource grants user, group or the rest of the world access to the PaLM API resource (e.g. a tuned model, corpus). A role is a collection of permitted operations that allows users to perform specific actions on PaLM API resources. To make them available to users, groups, or service accounts, you assign roles. When you assign a role, you grant permissions that the role contains. There are three concentric roles. Each role is a superset of the previous role's permitted operations: - reader can use the resource (e.g. tuned model, corpus) for inference - writer has reader's permissions and additionally can edit and share - owner has writer's permissions and additionally can delete"
+    ListPermissionsResponse:
+      id: ListPermissionsResponse
+      description: Response from `ListPermissions` containing a paginated list of permissions.
+      type: object
+      properties:
+        nextPageToken:
+          type: string
+          description: A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no more pages.
+        permissions:
+          description: Returned permissions.
+          items:
+            $ref: "#/components/schemas/Permission"
+          type: array
+    Status:
+      id: Status
+      description: "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors)."
+      type: object
+      properties:
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.
+        code:
+          type: integer
+          format: int32
+          description: The status code, which should be an enum value of google.rpc.Code.
+        details:
+          description: A list of messages that carry the error details. There is a common set of message types for APIs to use.
+          type: array
+          items:
+            type: object
+  x-stackQL-resources:
+    corpora:
+      id: gemini.corpora.corpora
+      name: corpora
+      title: Corpora
+      methods:
+        delete:
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}/delete"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+        get:
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}/get"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+        create:
+          config:
+            requestBodyTranslate:
+              algorithm: naive
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora/post"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+          request:
+            mediaType: application/json
+        list:
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora/get"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+            objectKey: $.corpora
+          config:
+            pagination:
+              requestToken:
+                key: pageToken
+                location: query
+              responseToken:
+                key: $.nextPageToken
+                location: body
+            queryParamPushdown:
+              top:
+                paramName: pageSize
+      sqlVerbs:
+        select:
+          - $ref: "#/components/x-stackQL-resources/corpora/methods/get"
+          - $ref: "#/components/x-stackQL-resources/corpora/methods/list"
+        insert:
+          - $ref: "#/components/x-stackQL-resources/corpora/methods/create"
+        update: []
+        delete:
+          - $ref: "#/components/x-stackQL-resources/corpora/methods/delete"
+        replace: []
+    operations:
+      id: gemini.corpora.operations
+      name: operations
+      title: Operations
+      methods:
+        get:
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}~1operations~1{operationsId}/get"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+      sqlVerbs:
+        select:
+          - $ref: "#/components/x-stackQL-resources/operations/methods/get"
+        insert: []
+        update: []
+        delete: []
+        replace: []
+    permissions:
+      id: gemini.corpora.permissions
+      name: permissions
+      title: Permissions
+      methods:
+        create:
+          config:
+            requestBodyTranslate:
+              algorithm: naive
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}~1permissions/post"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+          request:
+            mediaType: application/json
+        list:
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}~1permissions/get"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+            objectKey: $.permissions
+          config:
+            pagination:
+              requestToken:
+                key: pageToken
+                location: query
+              responseToken:
+                key: $.nextPageToken
+                location: body
+            queryParamPushdown:
+              top:
+                paramName: pageSize
+        delete:
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}~1permissions~1{permissionsId}/delete"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+        get:
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}~1permissions~1{permissionsId}/get"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+        patch:
+          config:
+            requestBodyTranslate:
+              algorithm: naive
+          operation:
+            $ref: "#/paths/~1v1beta~1corpora~1{corporaId}~1permissions~1{permissionsId}/patch"
+          response:
+            mediaType: application/json
+            openAPIDocKey: "200"
+          request:
+            mediaType: application/json
+      sqlVerbs:
+        select:
+          - $ref: "#/components/x-stackQL-resources/permissions/methods/get"
+          - $ref: "#/components/x-stackQL-resources/permissions/methods/list"
+        insert:
+          - $ref: "#/components/x-stackQL-resources/permissions/methods/create"
+        update:
+          - $ref: "#/components/x-stackQL-resources/permissions/methods/patch"
+        delete:
+          - $ref: "#/components/x-stackQL-resources/permissions/methods/delete"
+        replace: []
+servers:
+  - url: https://generativelanguage.googleapis.com

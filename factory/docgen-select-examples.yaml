@@ -1,0 +1,73 @@
+# Curated "Query Example" SQL for body-bearing SELECT methods (POST-as-SELECT
+# inference ops). Consumed by factory/enrich-select-docs.mjs, which renders each
+# method's SELECT example as nested tabs: "Query Shape" (mechanically derived,
+# placeholders + optional body params) and "Query Example" (the complete,
+# runnable query below, showing the nested JSON body values).
+#
+# Keyed <service>.<resource>.<method> under the provider id. Wire rules the
+# examples must respect (carried over from the Anthropic build, engine
+# behaviours):
+#   - JSON array/object values fan out from single-quoted strings, but only
+#     when the string is VALID JSON - backslash escapes (\n) are interpreted
+#     by the SQL parser first and break it, so avoid them;
+#   - discovery-derived body schemas carry no required markers, so the Query
+#     Shape lists every body param as optional - the curated examples show
+#     the minimum viable body.
+gemini:
+  models.content.generate_content: |
+    SELECT
+    JSON_EXTRACT(candidates, '$[0].content.parts[0].text') AS reply,
+    JSON_EXTRACT(usageMetadata, '$.totalTokenCount') AS total_tokens,
+    modelVersion
+    FROM gemini.models.content
+    WHERE modelsId = 'gemini-2.5-flash'
+    AND contents = '[
+      {
+        "role": "user",
+        "parts": [{"text": "how does stackql work?"}]
+      }
+    ]'
+    AND systemInstruction = '{"parts":[{"text":"You are a technical assistant. Answer in one short paragraph."}]}'
+    AND generationConfig = '{"maxOutputTokens": 2048}'
+    ;
+  models.token_counts.count_tokens: |
+    SELECT
+    totalTokens
+    FROM gemini.models.token_counts
+    WHERE modelsId = 'gemini-2.5-flash'
+    AND contents = '[
+      {
+        "role": "user",
+        "parts": [{"text": "how does stackql work?"}]
+      }
+    ]'
+    ;
+  models.embeddings.embed_content: |
+    SELECT
+    JSON_EXTRACT(embedding, '$.values[0]') AS first_dimension
+    FROM gemini.models.embeddings
+    WHERE modelsId = 'gemini-embedding-001'
+    AND content = '{"parts":[{"text":"stackql lets you query cloud APIs with SQL"}]}'
+    ;
+  models.batch_embeddings.batch_embed_contents: |
+    SELECT
+    embeddings
+    FROM gemini.models.batch_embeddings
+    WHERE modelsId = 'gemini-embedding-001'
+    AND requests = '[
+      {"model": "models/gemini-embedding-001", "content": {"parts":[{"text":"first passage"}]}},
+      {"model": "models/gemini-embedding-001", "content": {"parts":[{"text":"second passage"}]}}
+    ]'
+    ;
+  tuned_models.content.generate_content: |
+    SELECT
+    JSON_EXTRACT(candidates, '$[0].content.parts[0].text') AS reply
+    FROM gemini.tuned_models.content
+    WHERE tunedModelsId = 'my-tuned-model'
+    AND contents = '[
+      {
+        "role": "user",
+        "parts": [{"text": "classify this ticket"}]
+      }
+    ]'
+    ;
