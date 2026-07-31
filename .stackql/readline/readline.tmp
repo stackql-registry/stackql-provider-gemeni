@@ -1,0 +1,4 @@
+SELECT JSON_EXTRACT(candidates, '$[0].content.parts[0].text') AS reply, JSON_EXTRACT(usageMetadata, '$.totalTokenCount') AS total_tokens FROM gemini.models.content WHERE modelsId = 'gemini-2.5-flash' AND contents = '[{"parts":[{"text":"Name the four Galilean moons of Jupiter, comma separated."}]}]';
+SELECT totalTokens FROM gemini.models.token_counts WHERE modelsId = 'gemini-2.5-flash' AND contents = '[{"parts":[{"text":"Name the four Galilean moons of Jupiter, comma separated."}]}]';
+SELECT name, display_name, input_token_limit, thinking, supports_generate_content FROM gemini.models.vw_model_capabilities ORDER BY name;
+SELECT name, done, JSON_EXTRACT(metadata, '$.state') AS state FROM gemini.batches.batches;

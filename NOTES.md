@@ -41,7 +41,10 @@ not belong there.
 1. Run `make smoke-live` once the key is available; then decide the
    OAuth-only question for `tunedModels.*`/`corpora.*` permissions ops
    (CLAUDE.md control-plane note) and either exclude or add a doc callout.
-2. Netlify site + DNS (`gemini-provider.stackql.io`) - manual gate.
+2. GitHub Pages: enable Pages (source: GitHub Actions) on the GitHub repo
+   and point `gemini-provider.stackql.io` DNS at it - the workflows and
+   `website/static/CNAME` are in place; deployment fires on push to `main`
+   touching `website/**`.
 3. Registry publication PR from `provider-dev/openapi/src/gemini/` - manual
    gate.
 4. `models.predict` / `models.predictLongRunning` (Imagen/Veo surface) and

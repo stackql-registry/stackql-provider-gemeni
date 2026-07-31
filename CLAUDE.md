@@ -316,12 +316,18 @@ the pagination pattern (rule 2) promoted to (verified), the OAuth-only method li
 (control plane note), and the confirmed taxonomy. Findings land HERE, marked
 (verified) with dates - the next session must not re-derive them.
 
-## Website - one, Netlify
+## Website - one, GitHub Pages
 
 One Docusaurus site (`gemini-provider.stackql.io`), vendored shared config
 (stackql/docusaurus-config cloned to `.shared-config` at build), docgen via
 provider-utils `generate-docs-v2`, `sharp` pinned `^0.33` via resolutions.
-Netlify builds the site (deploy previews on PRs); CI carries NO website jobs.
+GitHub Actions deploys the site to GitHub Pages (same pattern as the openai
+providers): `.github/workflows/prod-web-deploy.yml` builds and deploys on
+push to `main` touching `website/**`; `test-web-deploy.yml` test-builds on
+PRs. The custom domain is `website/static/CNAME`. Hand-authored doc pages
+live in `provider-dev/docgen/provider-data/gemini/static-docs/` (docgen
+wipes `website/docs` and copies them back in - never author directly under
+`website/docs`).
 Docs must state plainly: this provider covers the Gemini API surface under
 `GEMINI_API_KEY`; billing, quota, key management and IAM are `google` provider
 services, with worked cross-provider join examples on a dedicated page.
