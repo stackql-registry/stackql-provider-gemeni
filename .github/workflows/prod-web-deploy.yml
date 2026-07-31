@@ -6,6 +6,10 @@ on:
       - main
     paths:
       - 'website/**'
+  # path filters cannot be evaluated on a branch-creation push (no `before`
+  # commit to diff against), so the initial push never triggers the deploy -
+  # workflow_dispatch covers that case and ad-hoc redeploys
+  workflow_dispatch:
 
 jobs:
   build:
