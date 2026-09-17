@@ -51,7 +51,7 @@ function collectBlocks(file) {
   let heading = '(top)';
   const lines = text.split('\n');
   for (let i = 0; i < lines.length; i++) {
-    const h = lines[i].match(/^##\s+(.*)$/);
+    const h = lines[i].match(/^#{2,3}\s+(.*)$/);
     if (h) { heading = h[1].trim(); continue; }
     if (lines[i].trim() === '```sql') {
       const body = [];
