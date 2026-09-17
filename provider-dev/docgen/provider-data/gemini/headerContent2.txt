@@ -16,7 +16,11 @@ The `gemini` provider authenticates with a Gemini API key sent in the `x-goog-ap
 
 The key is only ever sent as a request header - never in the URL query string.
 
-## Inference as a result set
+## Example Queries
+
+Try the following queries using `stackql shell`, or run them from a script or CI pipeline with `stackql exec`.
+
+### Inference as a result set
 
 Asking Gemini a question is a `SELECT`. The reply comes back as a row, with the text in the `candidates` array and the token spend in `usageMetadata`:
 
@@ -38,7 +42,7 @@ WHERE modelsId = 'gemini-2.5-flash'
 AND contents = '[{"parts":[{"text":"Name the four Galilean moons of Jupiter, comma separated."}]}]';
 ```
 
-## Which model can do what
+### Which model can do what
 
 The `vw_model_capabilities` view fans each model's supported generation methods and limits out into columns, so picking a model for a workload is a `WHERE` clause:
 
@@ -48,7 +52,7 @@ FROM gemini.models.vw_model_capabilities
 ORDER BY name;
 ```
 
-## Batch progress and triage
+### Batch progress and triage
 
 Batches are long-running operations; their state lives in the `metadata` JSON column:
 
@@ -60,7 +64,7 @@ SELECT
 FROM gemini.batches.batches;
 ```
 
-## Resource lifecycle
+### Resource lifecycle
 
 Corpora, cached contents, files and tuned models are managed with the corresponding SQL verbs:
 
