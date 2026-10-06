@@ -18,14 +18,14 @@
     "test-meta-routes": "node bin/test-meta-routes.cjs gemini",
     "smoke": "node tests/smoke.cjs",
     "smoke-live": "node tests/smoke.cjs --live",
-    "docgen": "node -e \"fs.rmSync('website/docs/services',{recursive:true,force:true})\" && node node_modules/@stackql/provider-utils/bin/docgen-utils.mjs generate-docs-v2 --provider-name gemini --provider-dir provider-dev/openapi/src/gemini/v00.00.00000 --output-dir website --provider-data-dir provider-dev/docgen/provider-data/gemini && node factory/enrich-select-docs.mjs --provider gemini --provider-root provider-dev/openapi/src/gemini/v00.00.00000 --docs-dir website/docs --examples factory/docgen-select-examples.yaml && node factory/scrub-docs.mjs --docs-dir website/docs --provider-root provider-dev/openapi/src/gemini/v00.00.00000 && node -e \"fs.cpSync('provider-dev/docgen/provider-data/gemini/static-docs','website/docs',{recursive:true})\"",
+    "docgen": "node -e \"fs.rmSync('website/docs/services',{recursive:true,force:true})\" && node node_modules/@stackql/provider-utils/bin/docgen-utils.mjs generate-docs-v2 --provider-name gemini --provider-dir provider-dev/openapi/src/gemini/v00.00.00000 --output-dir website --provider-data-dir provider-dev/docgen/provider-data/gemini --source-project https://github.com/stackql-registry/stackql-provider-gemeni && node factory/enrich-select-docs.mjs --provider gemini --provider-root provider-dev/openapi/src/gemini/v00.00.00000 --docs-dir website/docs --examples factory/docgen-select-examples.yaml && node factory/scrub-docs.mjs --docs-dir website/docs --provider-root provider-dev/openapi/src/gemini/v00.00.00000 && node -e \"fs.cpSync('provider-dev/docgen/provider-data/gemini/static-docs','website/docs',{recursive:true})\"",
     "check-doc-examples": "node factory/check-doc-examples.mjs",
     "postinstall": "node factory/patch-provider-utils.mjs"
   },
   "license": "MIT",
   "dependencies": {
     "@stackql/pgwire-lite": "^1.0.1",
-    "@stackql/provider-utils": "^0.7.7",
+    "@stackql/provider-utils": "^0.7.11",
     "js-yaml": "^4.1.0",
     "yaml": "^2.9.0"
   },
