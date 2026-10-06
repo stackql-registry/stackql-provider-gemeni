@@ -29,8 +29,9 @@ This provider covers the Gemini API surface reachable with a <CopyableCode code=
 
 :::info[Provider Summary]
 
-total services: __10__
-total resources: __43__
+total services: __10__  
+total resources: __43__  
+source project: __[stackql-provider-gemeni](https://github.com/stackql-registry/stackql-provider-gemeni)__  
 
 :::
 
